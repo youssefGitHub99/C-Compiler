@@ -4,10 +4,11 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "number.h"
+#include "number.h" // i can't understand
 
 extern FILE *yyin;
 extern int yylex(void);
+extern int yyparse();
 
 void yyerror(const char *str);
 
@@ -27,7 +28,7 @@ extern int COMMENT ;
 %token <num> INTEGER
 %token <num> RATIONAL
 
-%token DECL ENDDECL DEFINE RET
+%token DECL ENDDECL DEFINE RET 
 
 %token MAIN
 
@@ -42,19 +43,22 @@ extern int COMMENT ;
 %token END
 
 %right '='
+%left RELOP
+%left AND OR
+ 
 %left '+' '-'
 %left '*' '/'
+%left '^'
 %left '(' ')'
-%right '^'
 
-%left AND
-%left OR
+
+//%right '^' 
 
 %type<num> expr
 
 %%
 
-program: declarations mainBlock;
+program: declarations mainBlock {printf("\tStart the program\n")};
 
 declarations : 
     DECL declList ENDDECL           
@@ -120,24 +124,30 @@ expr:
     INTEGER { $$ = $1; }
     |  RATIONAL { $$ = $1; }
     |  IDENTIFIER
-    |  expr '+' expr { $$ = ADD($1, $3); }
-    |  expr '-' expr { $$ = SUBTRACT($1, $3); }
-    |  expr '*' expr { $$ = MULTIPLY($1, $3); }
-    |  expr '/' expr { $$ = DIVIDE($1, $3); }
-    |  expr '^' expr { $$ = POW($1, $3); }
+    |  expr '+' expr { $$ = ADD($1, $3); printf("+"); }
+    |  expr '-' expr { $$ = SUBTRACT($1, $3); printf("-");}
+    |  expr '*' expr { $$ = MULTIPLY($1, $3); printf("*");}
+    |  expr '/' expr { $$ = DIVIDE($1, $3); printf("/");}
+    |  expr '^' expr { $$ = POW($1, $3); printf("^");}
+    //|  expr '&&' expr { $$ = POW($1, $3); printf("^");}
+    //|  expr '==' expr { $$ = POW($1, $3); printf("^");}
+    //|  expr '>=' expr { $$ = POW($1, $3); printf("^");}
+    //|  expr '<=' expr { $$ = POW($1, $3); printf("^");}
+    //|  expr '>' expr { $$ = POW($1, $3); printf("^");}
+    //|  expr '<' expr { $$ = POW($1, $3); printf("^");}
     |  '(' expr ')'  { $$ = $2; }
     ;
 
 condition_stmt: 
-    IDENTIFIER RELOP IDENTIFIER 
-    | IDENTIFIER RELOP INTEGER 
-    | IDENTIFIER RELOP RATIONAL 
-    | INTEGER RELOP IDENTIFIER 
-    | RATIONAL RELOP IDENTIFIER 
+    IDENTIFIER RELOP IDENTIFIER {printf("/t%s/n",$2);}
+    | IDENTIFIER RELOP INTEGER {printf("/t%s/n",$2);}
+    | IDENTIFIER RELOP RATIONAL {printf("/t%s/n",$2);}
+    | INTEGER RELOP IDENTIFIER {printf("/t%s/n",$2);}
+    | RATIONAL RELOP IDENTIFIER {printf("/t%s/n",$2);}
     | condition_stmt AND condition_stmt 
     | condition_stmt OR condition_stmt 
-    | BOOLTRUE 
-    | BOOLFALSE
+    | BOOLTRUE {printf("/t%s/n",$1);}
+    | BOOLFALSE {printf("/t%s/n",$1);}
     ;
 
 if_stmt: 

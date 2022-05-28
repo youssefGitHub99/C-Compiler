@@ -1,5 +1,7 @@
 %{
 #include <stdlib.h>
+#include <string.h>
+#include "sym.h"
 extern void yyerror(const char *str);
 
 #include "number.h"
@@ -8,6 +10,7 @@ extern void yyerror(const char *str);
 int COMMENT = 0;
 int scope = 0;
 int nline = 0;
+
 %}
 
 identifier _[a-zA-Z][a-zA-Z0-9]*
@@ -27,16 +30,18 @@ main { return MAIN; }
 
 const { if(!COMMENT) return CONST; }
 
-[+-]?([1-9][0-9]+|[0-9])\.?[0-9]+|(\.[0-9]+)    {
+[+-]?([1-9][0-9]+|[0-9])\.[0-9]+|(\.[0-9]+)    {
                                                     if(!COMMENT) {
+                                                        //printf("%f float", strtod(yytext, NULL));
                                                         yylval.num = NEW_RATIONAL(strtod(yytext, NULL));
                                                         return RATIONAL;
                                                     } 
                                                 }
 
-[+-]?([1-9][0-9]|[0-9])    {
+[+-]?([1-9][0-9]+|[0-9])    {
                                 if(!COMMENT) {    
-                                    yylval.num = NEW_INTEGER(strtol(yytext, NULL, 10));;
+                                    //printf("%ld int", strtol(yytext, NULL, 10));
+                                    yylval.num = NEW_INTEGER(strtol(yytext, NULL, 10));
                                     return INTEGER;
                                 } 
                             }
@@ -44,7 +49,8 @@ const { if(!COMMENT) return CONST; }
 {identifier}    {
                     if(!COMMENT)  {
                         
-                        //yylval = *yytext - 'a';
+                        //strcpy(yylval.lexeme, yytext);
+                        //printf("lexeme = %s \n", yylval.lexeme);
                         return IDENTIFIER;
                     }
                 }

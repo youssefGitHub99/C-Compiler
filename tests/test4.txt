@@ -1,0 +1,10 @@
+decl
+_z = 7;
+_y = 5 * 4 / (3 + 7) ^ 2 - 4 + _z ;
+
+end decl
+
+main() { 
+    _x = 7;
+    return 0;
+}
